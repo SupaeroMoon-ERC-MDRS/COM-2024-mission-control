@@ -1,0 +1,47 @@
+import 'dart:io';
+
+import 'package:supaeromoon_mission_control/io/file_system.dart';
+import 'package:supaeromoon_mission_control/io/localization_default.dart';
+
+
+abstract class Loc{
+  static final Map<String, Map<String, String>> _localization = {};
+  static String _lang = "NONE";
+
+  static Iterable<String> get languages => _localization.keys;
+
+  static bool setLanguage(final String language){
+    if(_localization.containsKey(language)){
+      _lang = language;
+      return true;
+    }
+    return false;
+  }
+
+  static bool load(){
+    final Iterable<FileSystemEntity> elements = FileSystem.tryListElementsInLocalSync(FileSystem.localeDir).where((element) => element.path.endsWith(".loc"));
+
+    if(elements.isEmpty){
+      _localization["en-EN"] = en_EN;
+      FileSystem.trySaveMapToLocalAsync(FileSystem.localeDir, "en-EN.loc", en_EN, withIndent: true);
+    }
+
+    for(final FileSystemEntity elem in elements){
+      _read(elem.absolute.path);
+    }
+
+    return _localization.isNotEmpty;
+  }
+
+  static void _read(final String fn){
+    final String lang = fn.split('/').last.split('\\').last.split('.').first;
+    final Map<String, String> data = FileSystem.tryLoadMapFromLocalSync(FileSystem.localeDir, "$lang.loc").cast<String, String>();
+    if(data.isNotEmpty){
+      _localization[lang] = data;
+    }
+  }
+
+  static String get(final String label){
+    return _localization[_lang]?[label] ?? label;
+  }
+}

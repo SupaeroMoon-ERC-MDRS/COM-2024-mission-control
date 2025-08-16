@@ -1,0 +1,23 @@
+name: supaeromoon_mission_control
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.2.5 <4.0.0'
+
+dependencies:
+  bitsdojo_window: ^0.1.6
+  flutter:
+    sdk: flutter
+  google_fonts: 6.1.0
+  logging_utils: ^1.1.0
+  window_manager: 0.4.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
