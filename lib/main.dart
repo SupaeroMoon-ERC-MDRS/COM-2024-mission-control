@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supaeromoon_mission_control/io/localization.dart';
 import 'package:supaeromoon_mission_control/lifecycle.dart';
 import 'package:supaeromoon_mission_control/ui/common.dart';
 import 'package:supaeromoon_mission_control/ui/screens/main_screen.dart';
@@ -11,9 +12,9 @@ void main() async {
   runApp(const App());
 
   doWhenWindowReady(() {
-    const initialSize = Size(600, 450);
+    const initialSize = Size(1200, 450);
     appWindow.minSize = initialSize;
-    appWindow.size = initialSize * 2;
+    appWindow.size = initialSize;
     appWindow.alignment = Alignment.center;
 
     appWindow.show();
@@ -45,7 +46,7 @@ class _AppState extends State<App> with WindowListener {
     return MaterialApp(
       navigatorKey: mainWindowNavigatorKey,
       debugShowCheckedModeBanner: false,
-      title: "Supaeromoon Ground Station",
+      title: Loc.get("mission_control_title"),
       theme: ThemeManager.getThemeData(context),
       routes: {
         "/": (context) => const MainScreen(),

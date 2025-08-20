@@ -1,10 +1,11 @@
 import 'dart:io';
 
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:logging_utils/logging_utils.dart';
+import 'package:supaeromoon_mission_control/data_misc/session.dart';
 import 'package:supaeromoon_mission_control/io/file_system.dart';
 import 'package:supaeromoon_mission_control/io/localization.dart';
+import 'package:supaeromoon_mission_control/io/terminal.dart';
 import 'package:window_manager/window_manager.dart';
 
 abstract class LifeCycle{
@@ -13,17 +14,25 @@ abstract class LifeCycle{
     await windowManager.ensureInitialized();
     await FileSystem.getCurrentDirectory;
     logging.start();
+    Session.load();
+    Session.save();
+    if(!await terminalSetup()){
+      logging.critical("Failed to set up terminal");
+      await logging.stop();
+      exit(0);
+    }
     Loc.load();
     Loc.setLanguage("en-EN");
   }
 
   static void postInit(WindowListener root){
-    appWindow.maximizeOrRestore();
     windowManager.addListener(root);
     windowManager.setPreventClose(true);
+    windowManager.setResizable(false);
   }
 
   static Future<void> shutdown() async {
+    Session.save();
     await logging.stop();
     exit(0);
   }

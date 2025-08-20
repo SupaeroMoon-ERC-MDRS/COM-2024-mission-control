@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supaeromoon_mission_control/io/localization.dart';
 import 'package:supaeromoon_mission_control/lifecycle.dart';
 import 'package:supaeromoon_mission_control/notifications/notification_widgets.dart';
+import 'package:supaeromoon_mission_control/ui/components/main_screen_terminal.dart';
 import 'package:supaeromoon_mission_control/ui/theme.dart';
 
 class MainScreen extends StatelessWidget {
@@ -10,32 +11,16 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Column(
         children: [
-          const TopMenu(),
+          TopMenu(),
           Expanded(
             child: Stack(
               alignment: Alignment.topRight,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Expanded(child: MainScreenContent()),
-                          SizedBox(
-                            height: 100,
-                            child: Container(
-                              color: Colors.red
-                            )
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const NotificationOverlay()
+                MainScreenContent(),
+                NotificationOverlay()
               ],
             ),
           ),
@@ -103,6 +88,18 @@ class MainScreenContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Row(
+      children: [
+        const Expanded(
+          child: MainScreenTerminal()
+        ),
+        SizedBox(
+          width: 400,
+          child: Container(
+            color: Colors.red
+          )
+        ),
+      ],
+    );
   }
 }
