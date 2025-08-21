@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:logging_utils/logging_utils.dart';
+import 'package:supaeromoon_mission_control/data/discovery.dart';
 import 'package:supaeromoon_mission_control/data_misc/session.dart';
 import 'package:supaeromoon_mission_control/io/file_system.dart';
 import 'package:supaeromoon_mission_control/io/localization.dart';
@@ -15,11 +16,12 @@ abstract class LifeCycle{
     await FileSystem.getCurrentDirectory;
     logging.start();
     Session.load();
+    Loc.load();
+    Loc.setLanguage("en-EN");
     if(!await terminalSetup()){
       logging.critical("Failed to set up terminal");
     }
-    Loc.load();
-    Loc.setLanguage("en-EN");
+    await Database.discover();
   }
 
   static void postInit(WindowListener root){
