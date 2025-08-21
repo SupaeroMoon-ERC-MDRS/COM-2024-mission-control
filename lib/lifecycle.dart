@@ -15,11 +15,8 @@ abstract class LifeCycle{
     await FileSystem.getCurrentDirectory;
     logging.start();
     Session.load();
-    Session.save();
     if(!await terminalSetup()){
       logging.critical("Failed to set up terminal");
-      await logging.stop();
-      exit(0);
     }
     Loc.load();
     Loc.setLanguage("en-EN");

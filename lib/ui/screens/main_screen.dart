@@ -54,7 +54,7 @@ class TopMenu extends StatelessWidget {
               ),
             )
           ),
-          IconButton(
+          /*IconButton(
             onPressed: (){
               ThemeManager.changeStyle(ThemeManager.activeStyle == "DARK" ? "BRIGHT" : "DARK");
             },
@@ -62,7 +62,7 @@ class TopMenu extends StatelessWidget {
             padding: EdgeInsets.zero,
             splashColor: Colors.grey,
             icon: Icon(ThemeManager.activeStyle == "DARK" ? Icons.dark_mode : Icons.light_mode)
-          ),
+          ),*/
           MinimizeWindowButton(colors: ThemeManager.windowButtonColors,),
           appWindow.isMaximized
             ? RestoreWindowButton(colors: ThemeManager.windowButtonColors,

@@ -1,94 +1,82 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dartssh2/dartssh2.dart';
 import 'package:logging_utils/logging_utils.dart';
 import 'package:supaeromoon_mission_control/data_misc/session.dart';
 import 'package:xterm/xterm.dart';
 
-final Terminal mainScreenTerminal = Terminal(inputHandler: defaultInputHandler);
-late final SSHClient mainScreenPty;
-late final SSHSession mainScreenSession;
-late final int minCursorX;
-CellOffset lastReadCursor = const CellOffset(0, 0);
-String mainScreenTerminalBuffer = "";
+final TerminalManager manager = TerminalManager();
 
-late final SftpClient backgroundFTP;
+class TerminalManager{
+  final Terminal terminal = Terminal(inputHandler: defaultInputHandler);
+  late final SSHClient pty;
+  late final SSHSession session;
+  late final int minCursorX;
+  CellOffset lastReadCursor = const CellOffset(0, 0);
+  String buffer = "";
+  late final SftpClient sftp;
+  bool isConnected = false;
 
-Future<void> _setupMain(final String sh) async {
-  mainScreenPty = SSHClient(
-    await SSHSocket.connect(Session.ip, 22, timeout: const Duration(seconds: 3)),
-    username: Session.user,
-    onPasswordRequest: () => Session.pwd,
-  );
+  Future<void> connect() async {
+    pty = SSHClient(
+      await SSHSocket.connect(Session.ip, 22, timeout: const Duration(seconds: 3)),
+      username: Session.user,
+      onPasswordRequest: () => Session.pwd,
+    );
+    isConnected = true;
+  }
 
-  mainScreenSession = await mainScreenPty.shell(
-    pty: SSHPtyConfig(
-      width: mainScreenTerminal.viewWidth,
-      height: mainScreenTerminal.viewHeight,
-    ),
-  );
+  Future<void> initialize() async {
+    sftp = await pty.sftp();
 
-  mainScreenTerminal.onResize = (width, height, pixelWidth, pixelHeight) {
-    mainScreenSession.resizeTerminal(width, height, pixelWidth, pixelHeight);
-  };
+    session = await pty.shell(
+      pty: SSHPtyConfig(
+        width: terminal.viewWidth,
+        height: terminal.viewHeight,
+      ),
+    );
 
-  mainScreenSession.stdout
+    terminal.onResize = (width, height, pixelWidth, pixelHeight) {
+      session.resizeTerminal(width, height, pixelWidth, pixelHeight);
+    };
+
+    session.stdout
       .cast<List<int>>()
       .transform(const Utf8Decoder())
       .listen((final String str){
-        final CellOffset currentCursor = CellOffset(mainScreenTerminal.buffer.cursorX, mainScreenTerminal.buffer.cursorY);
+        final CellOffset currentCursor = CellOffset(terminal.buffer.cursorX, terminal.buffer.cursorY);
         if(currentCursor != lastReadCursor){
-          mainScreenTerminal.setCursor(lastReadCursor.x, lastReadCursor.y);
-          mainScreenTerminal.buffer.eraseDisplayFromCursor();
-          mainScreenTerminalBuffer = "";
+          terminal.setCursor(lastReadCursor.x, lastReadCursor.y);
+          terminal.buffer.eraseDisplayFromCursor();
+          buffer = "";
         }
 
-        mainScreenTerminal.write(str);
-        lastReadCursor = CellOffset(mainScreenTerminal.buffer.cursorX, mainScreenTerminal.buffer.cursorY);
+        terminal.write(str);
+        lastReadCursor = CellOffset(terminal.buffer.cursorX, terminal.buffer.cursorY);
       });
 
-  mainScreenSession.stderr
+    session.stderr
       .cast<List<int>>()
       .transform(const Utf8Decoder())
-      .listen(mainScreenTerminal.write);
+      .listen(terminal.write);
 
-  int attempts = 100;
-  while(attempts-- > 0){
-    await Future.delayed(const Duration(milliseconds: 100));
-    if(mainScreenTerminal.buffer.cursorX != 0){
-      minCursorX = mainScreenTerminal.buffer.cursorX;
-      return;
+    int attempts = 100;
+    while(attempts-- > 0){
+      await Future.delayed(const Duration(milliseconds: 100));
+      if(terminal.buffer.cursorX != 0){
+        minCursorX = terminal.buffer.cursorX;
+        return;
+      }
     }
-  }
 
-  throw Exception("Could not establish minCursorX");
+    throw Exception("Could not establish minCursorX");
+  }
 }
 
-/*void _setupBackground(final String sh){
-  backgroundPty = Pty.start(
-    sh,
-    columns: mainScreenTerminal.viewWidth,
-    rows: mainScreenTerminal.viewHeight,
-  );
-}*/
-
 Future<bool> terminalSetup() async {
-  late final String sh;
-
-  if(Platform.isLinux){
-    sh = Platform.environment['SHELL'] ?? 'bash';
-  }
-  else if(Platform.isWindows){
-    sh = 'cmd.exe';
-  }
-  else{
-    return false;
-  }
-
   try{
-  await _setupMain(sh);
-  //_setupBackground(sh);
+    await manager.connect();
+    await manager.initialize();
   }
   catch(ex){
     logging.critical(ex.toString());
