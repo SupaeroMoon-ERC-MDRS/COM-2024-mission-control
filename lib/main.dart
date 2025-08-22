@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supaeromoon_mission_control/io/localization.dart';
 import 'package:supaeromoon_mission_control/lifecycle.dart';
 import 'package:supaeromoon_mission_control/ui/common.dart';
+import 'package:supaeromoon_mission_control/ui/screens/developer_screen.dart';
 import 'package:supaeromoon_mission_control/ui/screens/main_screen.dart';
 import 'package:supaeromoon_mission_control/ui/theme.dart';
 import 'package:window_manager/window_manager.dart';
@@ -29,6 +30,10 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> with WindowListener {
+  static final Map<String, WidgetBuilder> _routes = {
+    "/": (context) => const MainScreen(),
+    "/dev" : (context) => const DeveloperScreen(),
+  };
 
   @override
   void initState() {
@@ -48,11 +53,20 @@ class _AppState extends State<App> with WindowListener {
       debugShowCheckedModeBanner: false,
       title: Loc.get("mission_control_title"),
       theme: ThemeManager.getThemeData(context),
-      routes: {
-        "/": (context) => const MainScreen(),
-        //"/settings" : ,
-      },
+      routes: {"/": (context) => const MainScreen()},
       initialRoute: "/",
+      onGenerateRoute: (settings) {
+        if(_routes.keys.contains(settings.name)){
+          return PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation){
+              return _routes[settings.name]!(context);
+            },
+            transitionDuration: Duration.zero,
+            reverseTransitionDuration: Duration.zero
+          );
+        }
+        return null;
+      },
     );
   }
 

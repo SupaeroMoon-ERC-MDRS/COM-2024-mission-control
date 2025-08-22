@@ -95,8 +95,16 @@ class MainScreenContent extends StatelessWidget {
         ),
         SizedBox(
           width: 400,
-          child: Container(
-            color: Colors.red
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: (){
+                  Navigator.pushNamed(context, '/dev');
+                },
+                icon: const Icon(Icons.construction),
+                splashRadius: 20,
+              )
+            ],
           )
         ),
       ],

@@ -24,10 +24,10 @@ abstract class Database{
   static Version? localGroundStation;
 
   static Future<bool> discover() async {
-    final Map localdbcData = await FileSystem.tryLoadMapFromLocalAsync("$dbcFolder/", ".DESC");
-    final Map localNetCodeData = await FileSystem.tryLoadMapFromLocalAsync("$netCodeFolder/", ".DESC");
-    final Map localRemoteData = await FileSystem.tryLoadMapFromLocalAsync("$remoteFolder/", ".DESC");
-    final Map localGroundStationData = await FileSystem.tryLoadMapFromLocalAsync("$groundStationFolder/", ".DESC");
+    final Map localdbcData = await FileSystem.tryLoadMapFromLocalAsync("$dbcFolder/", ".ATTRS");
+    final Map localNetCodeData = await FileSystem.tryLoadMapFromLocalAsync("$netCodeFolder/", ".ATTRS");
+    final Map localRemoteData = await FileSystem.tryLoadMapFromLocalAsync("$remoteFolder/", ".ATTRS");
+    final Map localGroundStationData = await FileSystem.tryLoadMapFromLocalAsync("$groundStationFolder/", ".ATTRS");
 
     try{ localdbc = DBCDescriptor.fromMap(localdbcData).version; }
     catch(_){ logging.error("No dbc installed locally"); }

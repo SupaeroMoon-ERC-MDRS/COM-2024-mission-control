@@ -13,7 +13,7 @@ abstract class LifeCycle{
   static Future<void> preInit() async {
     WidgetsFlutterBinding.ensureInitialized();
     await windowManager.ensureInitialized();
-    await FileSystem.getCurrentDirectory;
+    FileSystem.getCurrentDirectory;
     logging.start();
     Session.load();
     Loc.load();

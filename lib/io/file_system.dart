@@ -12,7 +12,7 @@ abstract class FileSystem{
   static String get topDir => "/";
   static String get localeDir => "Locale/";
 
-  static Future<String?> get getCurrentDirectory async {
+  static String? get getCurrentDirectory {
     if(_currentDirectory != null){
       return _currentDirectory;
     }
@@ -39,7 +39,7 @@ abstract class FileSystem{
   }
 
   static Future<void> trySaveMapToLocalAsync(final String path, final String filename, final Map jsonEncodeable, {final bool withIndent = false}) async {
-    if(await getCurrentDirectory == null){
+    if(getCurrentDirectory == null){
       logging.error("Cant determine current directory");
       return;
     }
@@ -73,7 +73,7 @@ abstract class FileSystem{
   }
 
   static Future<Map> tryLoadMapFromLocalAsync(final String path, final String filename, {final bool deleteWhenDone = false}) async {
-    if(await getCurrentDirectory == null){
+    if(getCurrentDirectory == null){
       logging.error("Cant determine current directory");
       return {};
     }
@@ -118,7 +118,7 @@ abstract class FileSystem{
   }
 
   static Future<void> trySaveBytesToLocalAsync(final String path, final String filename, final Uint8List bytes) async {
-    if(await getCurrentDirectory == null){
+    if(getCurrentDirectory == null){
       logging.error("Cant determine current directory");
       return;
     }
@@ -140,7 +140,7 @@ abstract class FileSystem{
   }
 
   static Future<Uint8List> tryLoadBytesFromLocalAsync(final String path, final String filename, {final bool deleteWhenDone = false}) async {
-    if(await getCurrentDirectory == null){
+    if(getCurrentDirectory == null){
       logging.error("Cant determine current directory");
       return Uint8List(0);
     }
@@ -175,7 +175,7 @@ abstract class FileSystem{
   }
 
   static Future<void> tryDeleteFromLocalAsync(final String path, final String filename) async {
-    if(await getCurrentDirectory == null){
+    if(getCurrentDirectory == null){
       logging.error("Cant determine current directory");
       return;
     }
@@ -205,7 +205,7 @@ abstract class FileSystem{
   }
 
   static Future<List<FileSystemEntity>> tryListElementsInLocalAsync(final String path) async {
-    if(await getCurrentDirectory == null){
+    if(getCurrentDirectory == null){
       logging.error("Cant determine current directory");
       return [];
     }

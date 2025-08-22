@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:supaeromoon_mission_control/data_misc/session.dart';
+import 'package:supaeromoon_mission_control/data/discovery.dart';
 import 'package:supaeromoon_mission_control/io/terminal.dart';
-import 'package:supaeromoon_mission_control/ui/theme.dart';
+import 'package:supaeromoon_mission_control/ui/components/session_form.dart';
 import 'package:xterm/xterm.dart';
 
 final TerminalController _controller = TerminalController();
@@ -73,6 +73,9 @@ class _MainScreenTerminalState extends State<MainScreenTerminal> {
       return SessionForm(
         onFinalized: () async {
           await terminalSetup();
+          if(manager.isConnected){
+            await Database.discover();
+          }
           setState(() {});
         }
       );
@@ -99,75 +102,6 @@ class _MainScreenTerminalState extends State<MainScreenTerminal> {
           }
         },
       )
-    );
-  }
-}
-
-class SessionForm extends StatefulWidget {
-  const SessionForm({super.key, required this.onFinalized});
-
-  final void Function() onFinalized;
-
-  @override
-  State<SessionForm> createState() => _SessionFormState();
-}
-
-class _SessionFormState extends State<SessionForm> {
-  final TextEditingController _ip = TextEditingController();
-  final TextEditingController _user = TextEditingController();
-  final TextEditingController _pwd = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Spacer(),
-        Text("Connection was not possible, set these variables:", style: ThemeManager.subTitleStyle,),
-        SessionFormElement(name: "IP address", controller: _ip, get: () => Session.ip),
-        SessionFormElement(name: "Username", controller: _user, get: () => Session.user),
-        SessionFormElement(name: "Password", controller: _pwd, get: () => Session.pwd),
-        TextButton(
-          onPressed: (){
-            Session.ip = _ip.text;
-            Session.user = _user.text;
-            Session.pwd = _pwd.text;
-            _ip.clear();
-            _user.clear();
-            _pwd.clear();
-            widget.onFinalized();
-          },
-          child: Text("Done", style: ThemeManager.textStyle,)
-        ),
-        const Spacer(),
-      ],
-    );
-  }
-}
-
-class SessionFormElement extends StatelessWidget {
-  const SessionFormElement({super.key, required this.name, required this.controller, required this.get});
-
-  final String name;
-  final TextEditingController controller;
-  final String Function() get;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Spacer(),
-        Text(name, style: ThemeManager.textStyle,),
-        SizedBox(
-          width: 200,
-          child: TextFormField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: get(),
-            ),
-          ),
-        ),
-        const Spacer(),
-      ],
     );
   }
 }
