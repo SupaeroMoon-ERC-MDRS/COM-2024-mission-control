@@ -13,7 +13,7 @@ const String remoteFolder = "remote";
 const String groundStationFolder = "ground_station";
 
 abstract class Database{
-  static final List<Version> dbcVersions = []; // more recent versions at low index
+  static final List<Version> dbcVersions = []; // more recent versions at low index TODO these need to be descriptors instead
   static final List<Version> netCodeVersions = [];
   static final List<Version> remoteVersions = [];
   static final List<Version> groundStationVersions = [];
@@ -22,6 +22,19 @@ abstract class Database{
   static Version? localNetCode;
   static Version? localRemote;
   static Version? localGroundStation;
+
+  static Future<bool> isLocked() async {
+    return (await manager.sftp.listdir(pathPrefix)).any((e) => e.filename == ".LOCK");
+  }
+
+  static Future<void> lock() async {
+    await (await manager.sftp.open("$pathPrefix/.LOCK", mode: SftpFileOpenMode.create)).close();
+  }
+
+  static Future<void> unlock() async {
+    try{ await manager.sftp.remove("$pathPrefix/.LOCK"); }
+    catch(_){}
+  }
 
   static Future<bool> discover() async {
     final Map localdbcData = await FileSystem.tryLoadMapFromLocalAsync("$dbcFolder/", ".ATTRS");
@@ -42,6 +55,10 @@ abstract class Database{
     catch(_){ logging.error("No ground station installed locally"); }
 
     try{
+      if(await isLocked()){
+        return false;
+      }
+
       final String platform = Platform.isWindows ? "win" : Platform.isLinux ? "linux" : throw Exception("Unsupported platform");
       final List<SftpName> dbcOptions = await manager.sftp.listdir("$pathPrefix/$platform/$dbcFolder");
       final List<SftpName> netCodeOptions = await manager.sftp.listdir("$pathPrefix/$platform/$netCodeFolder");

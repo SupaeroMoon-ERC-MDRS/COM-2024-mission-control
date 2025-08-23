@@ -1,7 +1,10 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:logging_utils/logging_utils.dart';
+import 'package:supaeromoon_mission_control/data/discovery.dart';
 import 'package:supaeromoon_mission_control/io/localization.dart';
 import 'package:supaeromoon_mission_control/lifecycle.dart';
+import 'package:supaeromoon_mission_control/notifications/notification_logic.dart' as noti;
 import 'package:supaeromoon_mission_control/notifications/notification_widgets.dart';
 import 'package:supaeromoon_mission_control/ui/components/main_screen_terminal.dart';
 import 'package:supaeromoon_mission_control/ui/theme.dart';
@@ -94,11 +97,18 @@ class MainScreenContent extends StatelessWidget {
           child: MainScreenTerminal()
         ),
         SizedBox(
+          // TODO options to fetch versions and update them, block update if database is locked
           width: 400,
           child: Row(
             children: [
               IconButton(
-                onPressed: (){
+                onPressed: () async {
+                  if(await Database.isLocked()){
+                    noti.NotificationController.add(noti.Notification.persistent(LogEntry.error("Someone is already editing the database")));
+                    return;
+                  }
+                  await Database.lock();
+                  // ignore: use_build_context_synchronously
                   Navigator.pushNamed(context, '/dev');
                 },
                 icon: const Icon(Icons.construction),

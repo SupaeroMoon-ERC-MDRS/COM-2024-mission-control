@@ -17,7 +17,7 @@ abstract class FTP{
     try{ await manager.sftp.mkdir(remoteFolder); }
     catch(_){}
 
-    (await manager.sftp.open("$remoteFolder/$remoteFileName", mode: SftpFileOpenMode.create)).close();
+    await (await manager.sftp.open("$remoteFolder/$remoteFileName", mode: SftpFileOpenMode.create)).close();
     final SftpFile remoteFile = await manager.sftp.open("$remoteFolder/$remoteFileName", mode: SftpFileOpenMode.write);
     await remoteFile.writeBytes(bytes);
     await remoteFile.close();
