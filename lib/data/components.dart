@@ -7,17 +7,13 @@ class Version{
 
   factory Version.fromString(final String str){
     final Iterable<int> parts = str.split('.').map((e) => int.parse(e));
-    return Version._(major: parts.elementAt(0), minor: parts.elementAt(1), patch: parts.elementAt(2));
-  }
-
-  bool isSuperiorTo(final Version other){
-    return major > other.major ||
-      (major == other.major && minor > other.minor) ||
-      (major == other.major && minor == other.minor && patch > other.patch);
+    return Version._(major: parts.first, minor: parts.elementAt(1), patch: parts.last);
   }
 
   bool operator>(covariant Version other){
-    return isSuperiorTo(other);
+    return major > other.major ||
+      (major == other.major && minor > other.minor) ||
+      (major == other.major && minor == other.minor && patch > other.patch);
   }
 
   @override

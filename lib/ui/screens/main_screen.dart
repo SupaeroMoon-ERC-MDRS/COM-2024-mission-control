@@ -109,7 +109,7 @@ class MainScreenContent extends StatelessWidget {
                   }
                   await Database.lock();
                   // ignore: use_build_context_synchronously
-                  Navigator.pushNamed(context, '/dev');
+                  Navigator.pushNamed(context, '/dev'); // TODO to return from this use Navigator.pop() or alike not push()
                 },
                 icon: const Icon(Icons.construction),
                 splashRadius: 20,
