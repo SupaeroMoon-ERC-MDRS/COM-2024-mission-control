@@ -40,6 +40,7 @@ class DeveloperContent extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         ComponentDeveloperView(
+          title: "Ground Station",
           getOptions: () => Database.groundStationVersions,
           reuploadVersion: (final Version version) {/* TODO */},
           updateAttrsVersion: (final Version version) {/* TODO */},
@@ -52,6 +53,7 @@ class DeveloperContent extends StatelessWidget {
                   width: 500, height: 300, dialog: UpdateDialog(
                     config: UpdateDialogConfig(hasRequiredDBC: true, hasRequiredNetCode: true),
                     updateHandler: UpdateHandler.groundStation,
+                    checkIfExists: Database.groundStationVersions.contains,
                   ),
                 );
               }
@@ -59,6 +61,7 @@ class DeveloperContent extends StatelessWidget {
           },
         ),
         ComponentDeveloperView(
+          title: "Remote Control",
           getOptions: () => Database.remoteVersions,
           reuploadVersion: (final Version version) {/* TODO */},
           updateAttrsVersion: (final Version version) {/* TODO */},
@@ -71,6 +74,7 @@ class DeveloperContent extends StatelessWidget {
                   width: 500, height: 300, dialog: UpdateDialog(
                     config: UpdateDialogConfig(hasRequiredNetCode: true),
                     updateHandler: UpdateHandler.remote,
+                    checkIfExists: Database.remoteVersions.contains,
                   ),
                 );
               }
@@ -78,6 +82,7 @@ class DeveloperContent extends StatelessWidget {
           },
         ),
         ComponentDeveloperView(
+          title: "Netcode",
           getOptions: () => Database.netCodeVersions,
           reuploadVersion: (final Version version) {/* TODO */},
           updateAttrsVersion: (final Version version) {/* TODO */},
@@ -90,6 +95,7 @@ class DeveloperContent extends StatelessWidget {
                   width: 500, height: 300, dialog: UpdateDialog(
                     config: UpdateDialogConfig(),
                     updateHandler: UpdateHandler.netcode,
+                    checkIfExists: Database.netCodeVersions.contains,
                   ),
                 );
               }
@@ -97,6 +103,7 @@ class DeveloperContent extends StatelessWidget {
           },
         ),
         ComponentDeveloperView(
+          title: "DBC",
           getOptions: () => Database.dbcVersions,
           reuploadVersion: (final Version version) {/* TODO */},
           updateAttrsVersion: (final Version version) {/* TODO */},
@@ -109,6 +116,7 @@ class DeveloperContent extends StatelessWidget {
                   width: 500, height: 300, dialog: UpdateDialog(
                     config: UpdateDialogConfig(),
                     updateHandler: UpdateHandler.dbc,
+                    checkIfExists: Database.dbcVersions.contains,
                   ),
                 );
               }
@@ -121,8 +129,9 @@ class DeveloperContent extends StatelessWidget {
 }
 
 class ComponentDeveloperView extends StatefulWidget {
-  const ComponentDeveloperView({super.key, required this.getOptions, required this.reuploadVersion, required this.updateAttrsVersion, required this.deleteVersion, required this.addNewVersion});
+  const ComponentDeveloperView({super.key, required this.title, required this.getOptions, required this.reuploadVersion, required this.updateAttrsVersion, required this.deleteVersion, required this.addNewVersion});
 
+  final String title;
   final List<Version> Function() getOptions;
   final void Function(Version) reuploadVersion;
   final void Function(Version) updateAttrsVersion;
@@ -146,45 +155,44 @@ class _ComponentDeveloperViewState extends State<ComponentDeveloperView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Text(widget.title, style: ThemeManager.subTitleStyle,), 
         SizedBox(
-          height: 350,
+          height: 300,
           width: 250,
-          child: Expanded(
-            child: ListView.builder(
-              itemCount: options.length,
-              itemExtent: 50,
-              itemBuilder: (final BuildContext context, final int index){
-                return Row(
-                  children: [
-                    Text(options[index].toString(), style: ThemeManager.textStyle,),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: (){
-                        widget.reuploadVersion(options[index]);
-                      },
-                      icon: const Icon(Icons.update),
-                      splashRadius: 20,
-                    ),
-                    IconButton(
-                      onPressed: (){
-                        widget.updateAttrsVersion(options[index]);
-                      },
-                      icon: const Icon(Icons.receipt),
-                      splashRadius: 20,
-                    ),
-                    IconButton(
-                      onPressed: (){
-                        widget.deleteVersion(options[index]);
-                        options.remove(options[index]);
-                        setState(() {});
-                      },
-                      icon: const Icon(Icons.delete),
-                      splashRadius: 20,
-                    ),
-                  ],
-                );
-              }
-            ),
+          child: ListView.builder(
+            itemCount: options.length,
+            itemExtent: 50,
+            itemBuilder: (final BuildContext context, final int index){
+              return Row(
+                children: [
+                  Text(options[index].toString(), style: ThemeManager.textStyle,),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: (){
+                      widget.reuploadVersion(options[index]);
+                    },
+                    icon: const Icon(Icons.update),
+                    splashRadius: 20,
+                  ),
+                  IconButton(
+                    onPressed: (){
+                      widget.updateAttrsVersion(options[index]);
+                    },
+                    icon: const Icon(Icons.receipt),
+                    splashRadius: 20,
+                  ),
+                  IconButton(
+                    onPressed: (){
+                      widget.deleteVersion(options[index]);
+                      options.remove(options[index]);
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.delete),
+                    splashRadius: 20,
+                  ),
+                ],
+              );
+            }
           ),
         ),
         TextButton(

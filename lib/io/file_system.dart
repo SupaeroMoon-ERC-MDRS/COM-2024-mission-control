@@ -11,6 +11,7 @@ abstract class FileSystem{
 
   static String get topDir => "/";
   static String get localeDir => "Locale/";
+  static String get tmpDir => ".TMP/";
 
   static String? get getCurrentDirectory {
     if(_currentDirectory != null){

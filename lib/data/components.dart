@@ -45,7 +45,7 @@ class DBCDescriptor{
   }
 
   Map asMap(){
-    return {"version": version};
+    return {"version": version.toString()};
   }
 }
 
@@ -59,7 +59,7 @@ class NetCodeDescriptor{
   }
 
   Map asMap(){
-    return {"version": version};
+    return {"version": version.toString()};
   }
 }
 
@@ -78,8 +78,8 @@ class RemoteControlDescriptor{
 
   Map asMap(){
     return {
-      "version": version,
-      "requiredNetCode": requiredNetCode
+      "version": version.toString(),
+      "requiredNetCode": requiredNetCode.toString()
     };
   }
 }
@@ -101,9 +101,9 @@ class GroundStationDescriptor{
 
   Map asMap(){
     return {
-      "version": version,
-      "requiredDBC": requiredDBC,
-      "requiredNetCode": requiredNetCode,
+      "version": version.toString(),
+      "requiredDBC": requiredDBC.toString(),
+      "requiredNetCode": requiredNetCode.toString(),
     };
   }
 }

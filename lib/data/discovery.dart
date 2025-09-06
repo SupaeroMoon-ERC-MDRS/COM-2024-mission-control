@@ -12,13 +12,33 @@ const String _netCodeFolder = "net/";
 const String _remoteFolder = "remote/";
 const String _groundStationFolder = "ground_station/";
 const String _lockFile = ".lock";
-const String _attributesFile = ".attrs";
+const String attributesFile = ".attrs";
 
 abstract class Database{
   static final List<Version> dbcVersions = []; // more recent versions at low index TODO these need to be descriptors instead
   static final List<Version> netCodeVersions = [];
   static final List<Version> remoteVersions = [];
   static final List<Version> groundStationVersions = [];
+
+  static String get remoteDbcFolder {
+    final String platform = Platform.isWindows ? "win/" : Platform.isLinux ? "linux/" : throw Exception("Unsupported platform");
+    return "$_pathPrefix$platform$_dbcFolder";
+  }
+
+  static String get remoteNetCodeFolder {
+    final String platform = Platform.isWindows ? "win/" : Platform.isLinux ? "linux/" : throw Exception("Unsupported platform");
+    return "$_pathPrefix$platform$_netCodeFolder";
+  }
+
+  static String get remoteRemoteFolder {
+    final String platform = Platform.isWindows ? "win/" : Platform.isLinux ? "linux/" : throw Exception("Unsupported platform");
+    return "$_pathPrefix$platform$_remoteFolder";
+  }
+
+  static String get remoteGroundStationFolder {
+    final String platform = Platform.isWindows ? "win/" : Platform.isLinux ? "linux/" : throw Exception("Unsupported platform");
+    return "$_pathPrefix$platform$_groundStationFolder";
+  }
 
   static Version? localdbc;
   static Version? localNetCode;
@@ -78,10 +98,10 @@ abstract class Database{
   }
 
   static Future<void> fetchLocal() async {
-    final Map localdbcData = await FileSystem.tryLoadMapFromLocalAsync(_dbcFolder, _attributesFile);
-    final Map localNetCodeData = await FileSystem.tryLoadMapFromLocalAsync(_netCodeFolder, _attributesFile);
-    final Map localRemoteData = await FileSystem.tryLoadMapFromLocalAsync(_remoteFolder, _attributesFile);
-    final Map localGroundStationData = await FileSystem.tryLoadMapFromLocalAsync(_groundStationFolder, _attributesFile);
+    final Map localdbcData = await FileSystem.tryLoadMapFromLocalAsync(_dbcFolder, attributesFile);
+    final Map localNetCodeData = await FileSystem.tryLoadMapFromLocalAsync(_netCodeFolder, attributesFile);
+    final Map localRemoteData = await FileSystem.tryLoadMapFromLocalAsync(_remoteFolder, attributesFile);
+    final Map localGroundStationData = await FileSystem.tryLoadMapFromLocalAsync(_groundStationFolder, attributesFile);
     
     try{ localdbc = DBCDescriptor.fromMap(localdbcData).version; }
     catch(_){ logging.error("No dbc installed locally"); }
