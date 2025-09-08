@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:supaeromoon_mission_control/data/components.dart';
 import 'package:supaeromoon_mission_control/data/discovery.dart';
 import 'package:supaeromoon_mission_control/notifications/notification_widgets.dart';
+import 'package:supaeromoon_mission_control/ui/dialog/delete_dialog.dart';
 import 'package:supaeromoon_mission_control/ui/dialog/dialog_base.dart';
+import 'package:supaeromoon_mission_control/ui/dialog/update_attrs_dialog.dart';
 import 'package:supaeromoon_mission_control/ui/dialog/update_dialog.dart';
 import 'package:supaeromoon_mission_control/ui/screens/main_screen.dart';
 import 'package:supaeromoon_mission_control/ui/theme.dart';
@@ -42,9 +44,61 @@ class DeveloperContent extends StatelessWidget {
         ComponentDeveloperView(
           title: "Ground Station",
           getOptions: () => Database.groundStationVersions,
-          reuploadVersion: (final Version version) {/* TODO */},
-          updateAttrsVersion: (final Version version) {/* TODO */},
-          deleteVersion: (final Version version) {/* TODO */},
+          reuploadVersion: (final Version version) async {
+            await showDialog(
+              context: context, builder: (context){
+                return DialogBase(
+                  title: "Update Ground Station version ${version.toString()}",
+                  width: 500, height: 300, dialog: UpdateDialog(
+                    config: UpdateDialogConfig(
+                      hasRequiredDBC: true,
+                      hasRequiredNetCode: true,
+                      requiredDBC: Database.groundStationReqDBC(version),
+                      requiredNetCode: Database.groundStationReqNetCode(version),
+                      version: version
+                    ),
+                    updateHandler: UpdateHandler.groundStation,
+                    checkIfExists: Database.groundStationVersions.contains,
+                  ),
+                );
+              }
+            );
+          },
+          updateAttrsVersion: (final Version version) async {
+            await showDialog(
+              context: context, builder: (context){
+                return DialogBase(
+                  title: "Update Ground Station version ${version.toString()} attributes",
+                  width: 500, height: 300, dialog: UpdateAttrsDialog(
+                    config: UpdateAttrsDialogConfig(
+                      hasRequiredDBC: true,
+                      hasRequiredNetCode: true,
+                      requiredDBC: Database.groundStationReqDBC(version),
+                      requiredNetCode: Database.groundStationReqNetCode(version),
+                      version: version
+                    ),
+                    updateHandler: UpdateAttrsHandler.groundStation,
+                    checkIfExists: Database.groundStationVersions.contains,
+                  ),
+                );
+              }
+            );
+          },
+          deleteVersion: (final Version version) async {
+            await showDialog(
+              context: context, builder: (context){
+                return DialogBase(
+                  title: "Remove Ground Station version",
+                  width: 500, height: 300, dialog: DeleteDialog(
+                    version: version,
+                    deleteHandler: DeleteHandler.groundStation,
+                    checkIfExists: Database.groundStationVersions.contains,
+                    checkIfIsRequired: ReferenceChecker.groundStation,
+                  ),
+                );
+              }
+            );
+          },
           addNewVersion: () async {
             await showDialog(
               context: context, builder: (context){
@@ -63,9 +117,57 @@ class DeveloperContent extends StatelessWidget {
         ComponentDeveloperView(
           title: "Remote Control",
           getOptions: () => Database.remoteVersions,
-          reuploadVersion: (final Version version) {/* TODO */},
-          updateAttrsVersion: (final Version version) {/* TODO */},
-          deleteVersion: (final Version version) {/* TODO */},
+          reuploadVersion: (final Version version) async {
+            await showDialog(
+              context: context, builder: (context){
+                return DialogBase(
+                  title: "Update Remote Control version ${version.toString()}",
+                  width: 500, height: 300, dialog: UpdateDialog(
+                    config: UpdateDialogConfig(
+                      hasRequiredNetCode: true,
+                      requiredNetCode: Database.remoteReqNetCode(version),
+                      version: version
+                    ),
+                    updateHandler: UpdateHandler.remote,
+                    checkIfExists: Database.remoteVersions.contains,
+                  ),
+                );
+              }
+            );
+          },
+          updateAttrsVersion: (final Version version) async {
+            await showDialog(
+              context: context, builder: (context){
+                return DialogBase(
+                  title: "Update Remote Control version ${version.toString()} attributes",
+                  width: 500, height: 300, dialog: UpdateAttrsDialog(
+                    config: UpdateAttrsDialogConfig(
+                      hasRequiredNetCode: true,
+                      requiredNetCode: Database.remoteReqNetCode(version),
+                      version: version
+                    ),
+                    updateHandler: UpdateAttrsHandler.remote,
+                    checkIfExists: Database.remoteVersions.contains,
+                  ),
+                );
+              }
+            );
+          },
+          deleteVersion: (final Version version) async {
+            await showDialog(
+              context: context, builder: (context){
+                return DialogBase(
+                  title: "Remove Remote Control version",
+                  width: 500, height: 300, dialog: DeleteDialog(
+                    version: version,
+                    deleteHandler: DeleteHandler.remote,
+                    checkIfExists: Database.remoteVersions.contains,
+                    checkIfIsRequired: ReferenceChecker.remote,
+                  ),
+                );
+              }
+            );
+          },
           addNewVersion: () async {
             await showDialog(
               context: context, builder: (context){
@@ -84,9 +186,49 @@ class DeveloperContent extends StatelessWidget {
         ComponentDeveloperView(
           title: "Netcode",
           getOptions: () => Database.netCodeVersions,
-          reuploadVersion: (final Version version) {/* TODO */},
-          updateAttrsVersion: (final Version version) {/* TODO */},
-          deleteVersion: (final Version version) {/* TODO */},
+          reuploadVersion: (final Version version) async {
+            await showDialog(
+              context: context, builder: (context){
+                return DialogBase(
+                  title: "Update netcode version ${version.toString()}",
+                  width: 500, height: 300, dialog: UpdateDialog(
+                    config: UpdateDialogConfig(version: version),
+                    updateHandler: UpdateHandler.netcode,
+                    checkIfExists: Database.netCodeVersions.contains,
+                  ),
+                );
+              }
+            );
+          },
+          updateAttrsVersion: (final Version version) async {
+            await showDialog(
+              context: context, builder: (context){
+                return DialogBase(
+                  title: "Update netcode version ${version.toString()} attributes",
+                  width: 500, height: 300, dialog: UpdateAttrsDialog(
+                    config: UpdateAttrsDialogConfig(version: version),
+                    updateHandler: UpdateAttrsHandler.netcode,
+                    checkIfExists: Database.netCodeVersions.contains,
+                  ),
+                );
+              }
+            );
+          },
+          deleteVersion: (final Version version) async {
+            await showDialog(
+              context: context, builder: (context){
+                return DialogBase(
+                  title: "Remove Netcode version",
+                  width: 500, height: 300, dialog: DeleteDialog(
+                    version: version,
+                    deleteHandler: DeleteHandler.netcode,
+                    checkIfExists: Database.netCodeVersions.contains,
+                    checkIfIsRequired: ReferenceChecker.netcode,
+                  ),
+                );
+              }
+            );
+          },
           addNewVersion: () async {
             await showDialog(
               context: context, builder: (context){
@@ -105,9 +247,49 @@ class DeveloperContent extends StatelessWidget {
         ComponentDeveloperView(
           title: "DBC",
           getOptions: () => Database.dbcVersions,
-          reuploadVersion: (final Version version) {/* TODO */},
-          updateAttrsVersion: (final Version version) {/* TODO */},
-          deleteVersion: (final Version version) {/* TODO */},
+          reuploadVersion: (final Version version) async {
+            await showDialog(
+              context: context, builder: (context){
+                return DialogBase(
+                  title: "Update dbc version ${version.toString()}",
+                  width: 500, height: 300, dialog: UpdateDialog(
+                    config: UpdateDialogConfig(version: version),
+                    updateHandler: UpdateHandler.dbc,
+                    checkIfExists: Database.dbcVersions.contains,
+                  ),
+                );
+              }
+            );
+          },
+          updateAttrsVersion: (final Version version) async {
+            await showDialog(
+              context: context, builder: (context){
+                return DialogBase(
+                  title: "Update dbc version ${version.toString()} attributes",
+                  width: 500, height: 300, dialog: UpdateAttrsDialog(
+                    config: UpdateAttrsDialogConfig(version: version),
+                    updateHandler: UpdateAttrsHandler.dbc,
+                    checkIfExists: Database.dbcVersions.contains,
+                  ),
+                );
+              }
+            );
+          },
+          deleteVersion: (final Version version) async {
+            await showDialog(
+              context: context, builder: (context){
+                return DialogBase(
+                  title: "Remove DBC version",
+                  width: 500, height: 300, dialog: DeleteDialog(
+                    version: version,
+                    deleteHandler: DeleteHandler.dbc,
+                    checkIfExists: Database.dbcVersions.contains,
+                    checkIfIsRequired: ReferenceChecker.dbc,
+                  ),
+                );
+              }
+            );
+          },
           addNewVersion: () async {
             await showDialog(
               context: context, builder: (context){

@@ -26,6 +26,15 @@ abstract class UpdateHandler{
     });
     await FTP.upload(FileSystem.tmpDir, "tmpgroundstationattr", "${Database.remoteGroundStationFolder}${version.toString()}/", attributesFile);
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmpgroundstationattr");
+
+    final int pos = (Database.groundStationVersions.indexWhere((e) => e > version) - 1)..clamp(0, Database.groundStationVersions.length);
+    Database.groundStationVersions.insert(pos, version);
+    Database.groundStationDescriptors.insert(pos, GroundStationDescriptor.fromMap({
+      "version": version,
+      "requiredNetCode": requiredNetCode,
+      "requiredDBC": requiredDBC
+    }));
+
     return true;
   }
 
@@ -49,6 +58,14 @@ abstract class UpdateHandler{
     FileSystem.trySaveMapToLocalSync(FileSystem.tmpDir, "tmpremoteattr", {"version": version.toString(), "requiredNetCode": requiredNetCode!.toString()});
     await FTP.upload(FileSystem.tmpDir, "tmpremoteattr", "${Database.remoteRemoteFolder}${version.toString()}/", attributesFile);
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmpremoteattr");
+
+    final int pos = (Database.remoteVersions.indexWhere((e) => e > version) - 1)..clamp(0, Database.remoteVersions.length);
+    Database.remoteVersions.insert(pos, version);
+    Database.remoteDescriptors.insert(pos, RemoteControlDescriptor.fromMap({
+      "version": version,
+      "requiredNetCode": requiredNetCode,
+    }));
+
     return true;
   }
 
@@ -76,6 +93,11 @@ abstract class UpdateHandler{
     FileSystem.trySaveMapToLocalSync(FileSystem.tmpDir, "tmpnetattr", {"version": version.toString()});
     await FTP.upload(FileSystem.tmpDir, "tmpnetattr", "${Database.remoteNetCodeFolder}${version.toString()}/", attributesFile);
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmpnetattr");
+
+    final int pos = (Database.netCodeVersions.indexWhere((e) => e > version) - 1)..clamp(0, Database.netCodeVersions.length);
+    Database.netCodeVersions.insert(pos, version);
+    Database.netCodeDescriptors.insert(pos, NetCodeDescriptor.fromMap({"version": version}));
+
     return true;
   }
 
@@ -99,6 +121,11 @@ abstract class UpdateHandler{
     FileSystem.trySaveMapToLocalSync(FileSystem.tmpDir, "tmpdbcattr", {"version": version.toString()});
     await FTP.upload(FileSystem.tmpDir, "tmpdbcattr", "${Database.remoteDbcFolder}${version.toString()}/", attributesFile);
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmpdbcattr");
+
+    final int pos = (Database.dbcVersions.indexWhere((e) => e > version) - 1)..clamp(0, Database.dbcVersions.length);
+    Database.dbcVersions.insert(pos, version);
+    Database.dbcDescriptors.insert(pos, DBCDescriptor.fromMap({"version": version}));
+
     return true;
   }
 }

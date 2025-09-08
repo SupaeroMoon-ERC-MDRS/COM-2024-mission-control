@@ -4,6 +4,7 @@ import 'package:dartssh2/dartssh2.dart';
 import 'package:logging_utils/logging_utils.dart';
 import 'package:supaeromoon_mission_control/data/components.dart';
 import 'package:supaeromoon_mission_control/io/file_system.dart';
+import 'package:supaeromoon_mission_control/io/serdes.dart';
 import 'package:supaeromoon_mission_control/io/terminal.dart';
 
 const String _pathPrefix = "Documents/version_control/";
@@ -15,10 +16,15 @@ const String _lockFile = ".lock";
 const String attributesFile = ".attrs";
 
 abstract class Database{
-  static final List<Version> dbcVersions = []; // more recent versions at low index TODO these need to be descriptors instead
+  static final List<Version> dbcVersions = []; // more recent versions at low index
   static final List<Version> netCodeVersions = [];
   static final List<Version> remoteVersions = [];
-  static final List<Version> groundStationVersions = [];
+  static final List<Version> groundStationVersions = [];  
+  
+  static final List<DBCDescriptor> dbcDescriptors = []; // more recent versions at low index
+  static final List<NetCodeDescriptor> netCodeDescriptors = [];
+  static final List<RemoteControlDescriptor> remoteDescriptors = [];
+  static final List<GroundStationDescriptor> groundStationDescriptors = [];
 
   static String get remoteDbcFolder {
     final String platform = Platform.isWindows ? "win/" : Platform.isLinux ? "linux/" : throw Exception("Unsupported platform");
@@ -39,6 +45,10 @@ abstract class Database{
     final String platform = Platform.isWindows ? "win/" : Platform.isLinux ? "linux/" : throw Exception("Unsupported platform");
     return "$_pathPrefix$platform$_groundStationFolder";
   }
+
+  static Version groundStationReqDBC(final Version v) => groundStationDescriptors[groundStationVersions.indexOf(v)].requiredDBC;
+  static Version groundStationReqNetCode(final Version v) => groundStationDescriptors[groundStationVersions.indexOf(v)].requiredNetCode;
+  static Version remoteReqNetCode(final Version v) => remoteDescriptors[remoteVersions.indexOf(v)].requiredNetCode;
 
   static Version? localdbc;
   static Version? localNetCode;
@@ -80,15 +90,39 @@ abstract class Database{
       remoteOptions.removeWhere((e) => ["..", "."].contains(e.filename));
       groundStationOptions.removeWhere((e) => ["..", "."].contains(e.filename));
 
-      dbcVersions.addAll(dbcOptions.map((e) => Version.fromString(e.filename)));
-      netCodeVersions.addAll(netCodeOptions.map((e) => Version.fromString(e.filename)));
-      remoteVersions.addAll(remoteOptions.map((e) => Version.fromString(e.filename)));
-      groundStationVersions.addAll(groundStationOptions.map((e) => Version.fromString(e.filename)));
+      for(final String v in dbcOptions.map((e) => e.filename)){
+        final SftpFile f = await manager.sftp.open("$_pathPrefix$platform$_dbcFolder$v/$attributesFile", mode: SftpFileOpenMode.read);
+        dbcDescriptors.add(DBCDescriptor.fromMap(SerDes.jsonFromBytes(await f.readBytes()) as Map));
+        f.close();
+      }
 
-      dbcVersions.sort(Version.compareTo);
-      netCodeVersions.sort(Version.compareTo);
-      remoteVersions.sort(Version.compareTo);
-      groundStationVersions.sort(Version.compareTo);
+      for(final String v in netCodeOptions.map((e) => e.filename)){
+        final SftpFile f = await manager.sftp.open("$_pathPrefix$platform$_netCodeFolder$v/$attributesFile", mode: SftpFileOpenMode.read);
+        netCodeDescriptors.add(NetCodeDescriptor.fromMap(SerDes.jsonFromBytes(await f.readBytes()) as Map));
+        f.close();
+      }
+
+      for(final String v in remoteOptions.map((e) => e.filename)){
+        final SftpFile f = await manager.sftp.open("$_pathPrefix$platform$_remoteFolder$v/$attributesFile", mode: SftpFileOpenMode.read);
+        remoteDescriptors.add(RemoteControlDescriptor.fromMap(SerDes.jsonFromBytes(await f.readBytes()) as Map));
+        f.close();
+      }
+
+      for(final String v in groundStationOptions.map((e) => e.filename)){
+        final SftpFile f = await manager.sftp.open("$_pathPrefix$platform$_groundStationFolder$v/$attributesFile", mode: SftpFileOpenMode.read);
+        groundStationDescriptors.add(GroundStationDescriptor.fromMap(SerDes.jsonFromBytes(await f.readBytes()) as Map));
+        f.close();
+      }
+
+      dbcDescriptors.sort((a, b) => Version.compareTo(a.version, b.version));
+      netCodeDescriptors.sort((a, b) => Version.compareTo(a.version, b.version));
+      remoteDescriptors.sort((a, b) => Version.compareTo(a.version, b.version));
+      groundStationDescriptors.sort((a, b) => Version.compareTo(a.version, b.version));
+
+      dbcVersions.addAll(dbcDescriptors.map((e) => e.version));
+      netCodeVersions.addAll(netCodeDescriptors.map((e) => e.version));
+      remoteVersions.addAll(remoteDescriptors.map((e) => e.version));
+      groundStationVersions.addAll(groundStationDescriptors.map((e) => e.version));
       return true;
     }
     catch(ex){
