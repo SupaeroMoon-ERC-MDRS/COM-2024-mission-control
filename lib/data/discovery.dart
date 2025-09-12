@@ -69,6 +69,16 @@ abstract class Database{
   }
 
   static Future<bool> discover() async {
+    groundStationDescriptors.clear();
+    remoteDescriptors.clear();
+    netCodeDescriptors.clear();
+    dbcDescriptors.clear();
+
+    groundStationVersions.clear();
+    remoteVersions.clear();
+    netCodeVersions.clear();
+    dbcVersions.clear();
+
     await fetchLocal();
     return await fetchRemote();
   }

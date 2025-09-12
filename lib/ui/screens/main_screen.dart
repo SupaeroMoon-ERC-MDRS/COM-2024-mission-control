@@ -1,12 +1,14 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:logging_utils/logging_utils.dart';
+import 'package:supaeromoon_mission_control/data/components.dart';
 import 'package:supaeromoon_mission_control/data/discovery.dart';
 import 'package:supaeromoon_mission_control/io/localization.dart';
 import 'package:supaeromoon_mission_control/lifecycle.dart';
 import 'package:supaeromoon_mission_control/notifications/notification_logic.dart' as noti;
 import 'package:supaeromoon_mission_control/notifications/notification_widgets.dart';
 import 'package:supaeromoon_mission_control/ui/components/main_screen_terminal.dart';
+import 'package:supaeromoon_mission_control/ui/components/update_controls.dart';
 import 'package:supaeromoon_mission_control/ui/theme.dart';
 
 class MainScreen extends StatelessWidget {
@@ -91,15 +93,32 @@ class MainScreenContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return const Row(
       children: [
-        const Expanded(
+        Expanded(
           child: MainScreenTerminal()
         ),
-        SizedBox(
-          // TODO options to fetch versions and update them, block update if database is locked
-          width: 400,
-          child: Row(
+        MainScreenSideMenu()
+      ],
+    );
+  }
+}
+
+class MainScreenSideMenu extends StatefulWidget {
+  const MainScreenSideMenu({super.key});
+
+  @override
+  State<MainScreenSideMenu> createState() => _MainScreenSideMenuState();
+}
+
+class _MainScreenSideMenuState extends State<MainScreenSideMenu> {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 400,
+      child: Column(
+        children: [
+          Row(
             children: [
               IconButton(
                 onPressed: () async {
@@ -109,15 +128,74 @@ class MainScreenContent extends StatelessWidget {
                   }
                   await Database.lock();
                   // ignore: use_build_context_synchronously
-                  Navigator.pushNamed(context, '/dev'); // TODO to return from this use Navigator.pop() or alike not push()
+                  Navigator.pushNamed(context, '/dev');
                 },
                 icon: const Icon(Icons.construction),
                 splashRadius: 20,
+              ),
+              IconButton(
+                onPressed: () async {
+                  if(await Database.isLocked()){
+                    noti.NotificationController.add(noti.Notification.persistent(LogEntry.error("Someone is already editing the database")));
+                    return;
+                  }
+                  
+                  noti.NotificationController.add(noti.Notification.decaying(LogEntry.error("Fetch started"), 2000));
+                  await Database.discover();
+                  noti.NotificationController.add(noti.Notification.decaying(LogEntry.error("Fetch finished"), 2000));
+                  setState(() {});
+                },
+                icon: const Icon(Icons.update)
               )
+              // TODO go to task screen
             ],
+          ),
+          UpdateControls(
+            title: "Ground Station",
+            getCurrent: () => Database.localGroundStation,
+            getOptions: () => Database.groundStationVersions,
+            onChanged: (final Version v) async {
+              if(v != Database.localGroundStation){
+                await DownloadHandler.groundStation(v);
+                setState(() {});
+              }
+            }
+          ),
+          UpdateControls(
+            title: "Remote Control",
+            getCurrent: () => Database.localRemote,
+            getOptions: () => Database.remoteVersions,
+            onChanged: (final Version v) async {
+              if(v != Database.localRemote){
+                await DownloadHandler.remote(v);
+                setState(() {});
+              }
+            }
+          ),
+          UpdateControls(
+            title: "Netcode",
+            getCurrent: () => Database.localNetCode,
+            getOptions: () => Database.netCodeVersions,
+            onChanged: (final Version v) async {
+              if(v != Database.localNetCode){
+                await DownloadHandler.netcode(v);
+                setState(() {});
+              }
+            }
+          ),
+          UpdateControls(
+            title: "DBC",
+            getCurrent: () => Database.localdbc,
+            getOptions: () => Database.dbcVersions,
+            onChanged: (final Version v) async {
+              if(v != Database.localdbc){
+                await DownloadHandler.dbc(v);
+                setState(() {});
+              }
+            }
           )
-        ),
-      ],
+        ],
+      )
     );
   }
 }

@@ -304,6 +304,25 @@ class DeveloperContent extends StatelessWidget {
               }
             );
           },
+        ),
+        SizedBox(
+          width: 400,
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () async {
+                      await Database.unlock();
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(Icons.keyboard_return)
+                  )
+                ],
+              )
+            ],
+          ),
         )
       ],
     );
