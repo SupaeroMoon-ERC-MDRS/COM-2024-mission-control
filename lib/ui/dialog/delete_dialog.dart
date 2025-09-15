@@ -69,8 +69,7 @@ abstract class ReferenceChecker{
   }
 
   static bool netcode(final Version version, final StringRef ref){
-    return Database.groundStationDescriptors.any((e) => e.requiredNetCode == version) ||
-    Database.remoteDescriptors.any((e) => e.requiredNetCode == version);
+    return Database.groundStationDescriptors.any((e) => e.requiredNetCode == version);
   }
 
   static bool dbc(final Version version, final StringRef ref){

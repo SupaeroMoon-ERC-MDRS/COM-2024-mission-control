@@ -123,11 +123,7 @@ class DeveloperContent extends StatelessWidget {
                 return DialogBase(
                   title: "Update Remote Control version ${version.toString()}",
                   width: 500, height: 300, dialog: UpdateDialog(
-                    config: UpdateDialogConfig(
-                      hasRequiredNetCode: true,
-                      requiredNetCode: Database.remoteReqNetCode(version),
-                      version: version
-                    ),
+                    config: UpdateDialogConfig(version: version),
                     updateHandler: UpdateHandler.remote,
                     checkIfExists: Database.remoteVersions.contains,
                   ),
@@ -141,11 +137,7 @@ class DeveloperContent extends StatelessWidget {
                 return DialogBase(
                   title: "Update Remote Control version ${version.toString()} attributes",
                   width: 500, height: 300, dialog: UpdateAttrsDialog(
-                    config: UpdateAttrsDialogConfig(
-                      hasRequiredNetCode: true,
-                      requiredNetCode: Database.remoteReqNetCode(version),
-                      version: version
-                    ),
+                    config: UpdateAttrsDialogConfig(version: version),
                     updateHandler: UpdateAttrsHandler.remote,
                     checkIfExists: Database.remoteVersions.contains,
                   ),

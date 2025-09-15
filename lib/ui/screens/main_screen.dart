@@ -156,8 +156,9 @@ class _MainScreenSideMenuState extends State<MainScreenSideMenu> {
             getOptions: () => Database.groundStationVersions,
             onChanged: (final Version v) async {
               if(v != Database.localGroundStation){
-                await DownloadHandler.groundStation(v);
-                setState(() {});
+                if(await DownloadHandler.groundStation(v)){
+                  setState(() {});
+                }
               }
             }
           ),
@@ -167,8 +168,9 @@ class _MainScreenSideMenuState extends State<MainScreenSideMenu> {
             getOptions: () => Database.remoteVersions,
             onChanged: (final Version v) async {
               if(v != Database.localRemote){
-                await DownloadHandler.remote(v);
-                setState(() {});
+                if(await DownloadHandler.remote(v)){
+                  setState(() {});
+                }
               }
             }
           ),
@@ -178,8 +180,9 @@ class _MainScreenSideMenuState extends State<MainScreenSideMenu> {
             getOptions: () => Database.netCodeVersions,
             onChanged: (final Version v) async {
               if(v != Database.localNetCode){
-                await DownloadHandler.netcode(v);
-                setState(() {});
+                if(await DownloadHandler.netcode(v)){
+                  setState(() {});
+                }
               }
             }
           ),
@@ -189,8 +192,9 @@ class _MainScreenSideMenuState extends State<MainScreenSideMenu> {
             getOptions: () => Database.dbcVersions,
             onChanged: (final Version v) async {
               if(v != Database.localdbc){
-                await DownloadHandler.dbc(v);
-                setState(() {});
+                if(await DownloadHandler.dbc(v)){
+                  setState(() {});
+                }
               }
             }
           )

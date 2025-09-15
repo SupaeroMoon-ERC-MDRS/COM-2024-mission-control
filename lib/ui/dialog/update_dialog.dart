@@ -24,7 +24,7 @@ abstract class UpdateHandler{
       "requiredNetCode": requiredNetCode!.toString(),
       "requiredDBC": requiredDBC!.toString()  
     });
-    await FTP.upload(FileSystem.tmpDir, "tmpgroundstationattr", "${Database.remoteGroundStationFolder}${version.toString()}/", attributesFile);
+    await FTP.upload(FileSystem.tmpDir, "tmpgroundstationattr", "${Database.remoteGroundStationFolder}${version.toString()}/", DPath.attributesFile);
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmpgroundstationattr");
 
     final int pos = (Database.groundStationVersions.indexWhere((e) => e > version) - 1)..clamp(0, Database.groundStationVersions.length);
@@ -56,7 +56,7 @@ abstract class UpdateHandler{
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmpremote");
 
     FileSystem.trySaveMapToLocalSync(FileSystem.tmpDir, "tmpremoteattr", {"version": version.toString(), "requiredNetCode": requiredNetCode!.toString()});
-    await FTP.upload(FileSystem.tmpDir, "tmpremoteattr", "${Database.remoteRemoteFolder}${version.toString()}/", attributesFile);
+    await FTP.upload(FileSystem.tmpDir, "tmpremoteattr", "${Database.remoteRemoteFolder}${version.toString()}/", DPath.attributesFile);
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmpremoteattr");
 
     final int pos = (Database.remoteVersions.indexWhere((e) => e > version) - 1)..clamp(0, Database.remoteVersions.length);
@@ -91,7 +91,7 @@ abstract class UpdateHandler{
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmplib2");
 
     FileSystem.trySaveMapToLocalSync(FileSystem.tmpDir, "tmpnetattr", {"version": version.toString()});
-    await FTP.upload(FileSystem.tmpDir, "tmpnetattr", "${Database.remoteNetCodeFolder}${version.toString()}/", attributesFile);
+    await FTP.upload(FileSystem.tmpDir, "tmpnetattr", "${Database.remoteNetCodeFolder}${version.toString()}/", DPath.attributesFile);
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmpnetattr");
 
     final int pos = (Database.netCodeVersions.indexWhere((e) => e > version) - 1)..clamp(0, Database.netCodeVersions.length);
@@ -119,7 +119,7 @@ abstract class UpdateHandler{
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmpdbc");
 
     FileSystem.trySaveMapToLocalSync(FileSystem.tmpDir, "tmpdbcattr", {"version": version.toString()});
-    await FTP.upload(FileSystem.tmpDir, "tmpdbcattr", "${Database.remoteDbcFolder}${version.toString()}/", attributesFile);
+    await FTP.upload(FileSystem.tmpDir, "tmpdbcattr", "${Database.remoteDbcFolder}${version.toString()}/", DPath.attributesFile);
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmpdbcattr");
 
     final int pos = (Database.dbcVersions.indexWhere((e) => e > version) - 1)..clamp(0, Database.dbcVersions.length);

@@ -65,21 +65,18 @@ class NetCodeDescriptor{
 
 class RemoteControlDescriptor{
   final Version version;
-  final Version requiredNetCode;
 
-  const RemoteControlDescriptor._({required this.version, required this.requiredNetCode});
+  const RemoteControlDescriptor._({required this.version});
 
   factory RemoteControlDescriptor.fromMap(final Map data){
     return RemoteControlDescriptor._(
       version: Version.fromString(data["version"]),
-      requiredNetCode: Version.fromString(data["requiredNetCode"]),
     );
   }
 
   Map asMap(){
     return {
-      "version": version.toString(),
-      "requiredNetCode": requiredNetCode.toString()
+      "version": version.toString()
     };
   }
 }

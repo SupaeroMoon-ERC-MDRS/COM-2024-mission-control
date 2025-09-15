@@ -12,7 +12,7 @@ abstract class UpdateAttrsHandler{
       "requiredNetCode": requiredNetCode!.toString(),
       "requiredDBC": requiredDBC!.toString()  
     });
-    await FTP.upload(FileSystem.tmpDir, "tmpgroundstationattr", "${Database.remoteGroundStationFolder}${version.toString()}/", attributesFile);
+    await FTP.upload(FileSystem.tmpDir, "tmpgroundstationattr", "${Database.remoteGroundStationFolder}${version.toString()}/", DPath.attributesFile);
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmpgroundstationattr");
 
     final int ref = Database.groundStationDescriptors.indexWhere((e) => e.version == version);
@@ -26,7 +26,7 @@ abstract class UpdateAttrsHandler{
 
   static Future<bool> remote(final Version version, final Version? requiredNetCode, final Version? _) async {
     FileSystem.trySaveMapToLocalSync(FileSystem.tmpDir, "tmpremoteattr", {"version": version.toString(), "requiredNetCode": requiredNetCode!.toString()});
-    await FTP.upload(FileSystem.tmpDir, "tmpremoteattr", "${Database.remoteRemoteFolder}${version.toString()}/", attributesFile);
+    await FTP.upload(FileSystem.tmpDir, "tmpremoteattr", "${Database.remoteRemoteFolder}${version.toString()}/", DPath.attributesFile);
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmpremoteattr");
 
     final int ref = Database.remoteDescriptors.indexWhere((e) => e.version == version);
