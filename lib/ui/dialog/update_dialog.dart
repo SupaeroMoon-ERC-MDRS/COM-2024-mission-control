@@ -9,7 +9,7 @@ import 'package:supaeromoon_mission_control/ui/theme.dart';
 abstract class UpdateHandler{
   static Future<bool> groundStation(final Version version, final Version? requiredNetCode, final Version? requiredDBC) async {
     final String? dir = await FilePicker.platform.getDirectoryPath(
-      dialogTitle: "Pick the remote control executable of this version",
+      dialogTitle: "Pick the ground station folder of this version",
       initialDirectory: FileSystem.getCurrentDirectory,
     );
 
@@ -24,15 +24,16 @@ abstract class UpdateHandler{
       "requiredNetCode": requiredNetCode!.toString(),
       "requiredDBC": requiredDBC!.toString()  
     });
+
     await FTP.upload(FileSystem.tmpDir, "tmpgroundstationattr", "${Database.remoteGroundStationFolder}${version.toString()}/", DPath.attributesFile);
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmpgroundstationattr");
 
-    final int pos = (Database.groundStationVersions.indexWhere((e) => e > version) - 1)..clamp(0, Database.groundStationVersions.length);
+    final int pos = Database.groundStationVersions.isEmpty ? 0 : (Database.groundStationVersions.indexWhere((e) => e > version) - 1)..clamp(0, Database.groundStationVersions.length);
     Database.groundStationVersions.insert(pos, version);
     Database.groundStationDescriptors.insert(pos, GroundStationDescriptor.fromMap({
-      "version": version,
-      "requiredNetCode": requiredNetCode,
-      "requiredDBC": requiredDBC
+      "version": version.toString(),
+      "requiredNetCode": requiredNetCode.toString(),
+      "requiredDBC": requiredDBC.toString()
     }));
 
     return true;
@@ -62,8 +63,7 @@ abstract class UpdateHandler{
     final int pos = (Database.remoteVersions.indexWhere((e) => e > version) - 1)..clamp(0, Database.remoteVersions.length);
     Database.remoteVersions.insert(pos, version);
     Database.remoteDescriptors.insert(pos, RemoteControlDescriptor.fromMap({
-      "version": version,
-      "requiredNetCode": requiredNetCode,
+      "version": version.toString(),
     }));
 
     return true;

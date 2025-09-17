@@ -53,10 +53,12 @@ abstract class DownloadHandler{
   }
 
   static Future<bool> netcode(final Version v) async {
-    final Version gsReqNetcode = GroundStationDescriptor.fromMap(await FileSystem.tryLoadMapFromLocalAsync(DPath.groundStationFolder, DPath.attributesFile)).requiredNetCode;
-    if(gsReqNetcode > v){
-      noti.NotificationController.add(noti.Notification.persistent(LogEntry.error("Currently installed Ground station version ${Database.localGroundStation.toString()} requires netcode version at least ${gsReqNetcode.toString()}")));
-      return false;
+    if(Database.localGroundStation != null){
+      final Version gsReqNetcode = GroundStationDescriptor.fromMap(await FileSystem.tryLoadMapFromLocalAsync(DPath.groundStationFolder, DPath.attributesFile)).requiredNetCode;
+      if(gsReqNetcode > v){
+        noti.NotificationController.add(noti.Notification.persistent(LogEntry.error("Currently installed Ground station version ${Database.localGroundStation.toString()} requires netcode version at least ${gsReqNetcode.toString()}")));
+        return false;
+      }
     }
 
     final List<FileSystemEntity> elems = await FileSystem.tryListElementsInLocalAsync(DPath.netCodeFolder);
@@ -75,10 +77,12 @@ abstract class DownloadHandler{
   }
 
   static Future<bool> dbc(final Version v) async {
-    final Version gsReqDBC = GroundStationDescriptor.fromMap(await FileSystem.tryLoadMapFromLocalAsync(DPath.groundStationFolder, DPath.attributesFile)).requiredDBC;
-    if(gsReqDBC > v){
-      noti.NotificationController.add(noti.Notification.persistent(LogEntry.error("Currently installed Ground station version ${Database.localGroundStation.toString()} requires dbc version at least ${gsReqDBC.toString()}")));
-      return false;
+    if(Database.localGroundStation != null){
+      final Version gsReqDBC = GroundStationDescriptor.fromMap(await FileSystem.tryLoadMapFromLocalAsync(DPath.groundStationFolder, DPath.attributesFile)).requiredDBC;
+      if(gsReqDBC > v){
+        noti.NotificationController.add(noti.Notification.persistent(LogEntry.error("Currently installed Ground station version ${Database.localGroundStation.toString()} requires dbc version at least ${gsReqDBC.toString()}")));
+        return false;
+      }
     }
 
     final List<FileSystemEntity> elems = await FileSystem.tryListElementsInLocalAsync(DPath.dbcFolder);
@@ -119,6 +123,7 @@ class _UpdateControlsState extends State<UpdateControls> {
           child: Text(widget.title, style: ThemeManager.textStyle,),
         ),
         Text(widget.getCurrent().toString(), style: ThemeManager.textStyle,),
+        const Spacer(),
         DropdownButton(
           value: widget.getCurrent(),
           items: widget.getOptions().map((e) => DropdownMenuItem(value: e, child: Text(e?.toString() ?? "Select", style: ThemeManager.textStyle,),)).toList(),

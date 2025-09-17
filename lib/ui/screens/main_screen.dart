@@ -140,9 +140,9 @@ class _MainScreenSideMenuState extends State<MainScreenSideMenu> {
                     return;
                   }
                   
-                  noti.NotificationController.add(noti.Notification.decaying(LogEntry.error("Fetch started"), 2000));
+                  noti.NotificationController.add(noti.Notification.decaying(LogEntry.info("Fetch started"), 2000));
                   await Database.discover();
-                  noti.NotificationController.add(noti.Notification.decaying(LogEntry.error("Fetch finished"), 2000));
+                  noti.NotificationController.add(noti.Notification.decaying(LogEntry.info("Fetch finished"), 2000));
                   setState(() {});
                 },
                 icon: const Icon(Icons.update)

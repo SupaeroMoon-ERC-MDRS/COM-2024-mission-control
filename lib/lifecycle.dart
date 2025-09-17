@@ -20,6 +20,8 @@ abstract class LifeCycle{
     if(!await terminalSetup()){
       logging.critical("Failed to set up terminal");
     }
+    FileSystem.trySaveMapToLocalSync(FileSystem.tmpDir, "tmp", {});
+    FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, "tmp");
   }
 
   static void postInit(WindowListener root){

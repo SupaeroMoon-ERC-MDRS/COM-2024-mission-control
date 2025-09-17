@@ -351,7 +351,7 @@ class _ComponentDeveloperViewState extends State<ComponentDeveloperView> {
         Text(widget.title, style: ThemeManager.subTitleStyle,), 
         SizedBox(
           height: 300,
-          width: 250,
+          width: 200,
           child: ListView.builder(
             itemCount: options.length,
             itemExtent: 50,

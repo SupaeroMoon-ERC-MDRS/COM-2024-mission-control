@@ -25,6 +25,7 @@ abstract class FTP{
   }
 
   static Future<void> uploadZip(final String localFolder, final String tarName, final String remoteFolder) async {
+    print([localFolder, tarName, remoteFolder]);
     await Tar.tar(localFolder, "${FileSystem.getCurrentDirectory}Local/${FileSystem.tmpDir}$tarName");
     await upload(FileSystem.tmpDir, tarName, remoteFolder, tarName);
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, tarName);
@@ -57,20 +58,52 @@ abstract class Tar{
   static String get sh => Platform.isWindows ? "cmd.exe" : Platform.isLinux ? "bash" : throw Exception();
 
   static Future<void> tar(final String from, final String to) async {
-    final String command = "tar -cf $to $from";
+    final String command = "tar -cf $to $from\n";
     final Pty pty = Pty.start(sh);
-    final Uint8List _ = await pty.output.asBroadcastStream().first;
-    pty.write(utf8.encode(command));
-    await pty.output.firstWhere((e) => e == _);
+    Uint8List? _;
+    bool sent = false;
+    int i = 0;
+    await for(final Uint8List bytes in pty.output){
+      final bool wait = _ == null;
+      if(_ == null && bytes.length > 10){ // TODO contains some character sequence like ": "
+        _ = bytes;
+      }
+      if(!sent && _ != null){
+        pty.write(utf8.encode(command));
+        sent = true;
+      }
+      if(wait){
+        continue;
+      }
+      if(utf8.decode(bytes).substring(bytes.length ~/ 2) == utf8.decode(_!).substring(bytes.length ~/ 2)){
+        break;
+      }
+    }
     pty.kill();
   }
 
   static Future<void> untar(final String from, final String to) async {
-    final String command = "tar -xf $from -C $to";
+    final String command = "tar -xf $from -C $to\n";
     final Pty pty = Pty.start(sh);
-    final Uint8List _ = await pty.output.asBroadcastStream().first;
-    pty.write(utf8.encode(command));
-    await pty.output.firstWhere((e) => e == _);
+    Uint8List? _;
+    bool sent = false;
+    int i = 0;
+    await for(final Uint8List bytes in pty.output){
+      final bool wait = _ == null;
+      if(_ == null && bytes.length > 10){ // TODO contains some character sequence like ": "
+        _ = bytes;
+      }
+      if(!sent && _ != null){
+        pty.write(utf8.encode(command));
+        sent = true;
+      }
+      if(wait){
+        continue;
+      }
+      if(utf8.decode(bytes).substring(bytes.length ~/ 2) == utf8.decode(_!).substring(bytes.length ~/ 2)){
+        break;
+      }
+    }
     pty.kill();
   }
 }

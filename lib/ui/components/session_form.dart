@@ -22,9 +22,9 @@ class _SessionFormState extends State<SessionForm> {
       children: [
         const Spacer(),
         Text("Connection was not possible, set these variables:", style: ThemeManager.subTitleStyle,),
-        SessionFormElement(name: "IP address", controller: _ip, get: () => Session.ip),
-        SessionFormElement(name: "Username", controller: _user, get: () => Session.user),
-        SessionFormElement(name: "Password", controller: _pwd, get: () => Session.pwd),
+        SessionFormElement(name: "IP address", controller: _ip, get: () => Session.ip, hidden: false,),
+        SessionFormElement(name: "Username", controller: _user, get: () => Session.user, hidden: false,),
+        SessionFormElement(name: "Password", controller: _pwd, get: () => Session.pwd, hidden: true,),
         TextButton(
           onPressed: (){
             Session.ip = _ip.text;
@@ -45,11 +45,12 @@ class _SessionFormState extends State<SessionForm> {
 }
 
 class SessionFormElement extends StatelessWidget {
-  const SessionFormElement({super.key, required this.name, required this.controller, required this.get});
+  const SessionFormElement({super.key, required this.name, required this.controller, required this.get, required this.hidden});
 
   final String name;
   final TextEditingController controller;
   final String Function() get;
+  final bool hidden;
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +62,10 @@ class SessionFormElement extends StatelessWidget {
           width: 200,
           child: TextFormField(
             controller: controller,
+            obscureText: hidden,
             decoration: InputDecoration(
               hintText: get(),
+              
             ),
           ),
         ),
