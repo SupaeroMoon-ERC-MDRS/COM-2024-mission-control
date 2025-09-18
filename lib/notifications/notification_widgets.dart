@@ -7,7 +7,7 @@ import 'package:supaeromoon_mission_control/ui/theme.dart';
 import 'notification_logic.dart' as noti;
 
 const double _notificationHeight = 100;
-const double _notificationWidth = 400;
+const double _notificationWidth = 250;
 
 final Map<LogLevel, Color> _levelColors = {
   LogLevel.INFO: Colors.green.shade800,
@@ -186,9 +186,10 @@ class _NotificationContainerState extends State<NotificationContainer> {
                   ],
                 ),
                 Padding(
-                  padding: EdgeInsets.all(ThemeManager.globalStyle.padding),
+                  padding: EdgeInsets.symmetric(horizontal:  ThemeManager.globalStyle.padding),
                   child: Text(widget.notification.entry.message,
-                    maxLines: 2,
+                    style: ThemeManager.textStyle..copyWith(fontSize: 10),
+                    maxLines: 3,
                     overflow: TextOverflow.clip,
                   )
                 )
