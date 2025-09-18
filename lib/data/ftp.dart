@@ -1,9 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dartssh2/dartssh2.dart';
-import 'package:flutter_pty/flutter_pty.dart';
+import 'package:supaeromoon_mission_control/data/shell_session.dart';
 import 'package:supaeromoon_mission_control/io/file_system.dart';
 import 'package:supaeromoon_mission_control/io/terminal.dart';
 
@@ -59,50 +58,15 @@ abstract class Tar{
   static Future<void> tar(final String from, final String to) async {
     final String target = from.split('/').last;
     final String at = from.substring(0, from.length - target.length);
-    final String command = "tar -cf $to -C $at $target\n";
-    final Pty pty = Pty.start(sh);
-    Uint8List? _;
-    bool sent = false;
-    await for(final Uint8List bytes in pty.output){
-      final bool wait = _ == null;
-      if(_ == null && bytes.length > 10){ // TODO contains some character sequence like ": "
-        _ = bytes;
-      }
-      if(!sent && _ != null){
-        pty.write(utf8.encode(command));
-        sent = true;
-      }
-      if(wait){
-        continue;
-      }
-      if(utf8.decode(bytes).substring(bytes.length ~/ 2) == utf8.decode(_!).substring(bytes.length ~/ 2)){
-        break;
-      }
+    if(Platform.isWindows){
+      File(to).createSync(recursive: true);
     }
-    pty.kill();
+    final String command = "tar -cf $to -C $at $target\n";
+    await SingleCommandShell.execute(command);
   }
 
   static Future<void> untar(final String from, final String to) async {
     final String command = "tar -xf $from -C $to\n";
-    final Pty pty = Pty.start(sh);
-    Uint8List? _;
-    bool sent = false;
-    await for(final Uint8List bytes in pty.output){
-      final bool wait = _ == null;
-      if(_ == null && bytes.length > 10){ // TODO contains some character sequence like ": "
-        _ = bytes;
-      }
-      if(!sent && _ != null){
-        pty.write(utf8.encode(command));
-        sent = true;
-      }
-      if(wait){
-        continue;
-      }
-      if(utf8.decode(bytes).substring(bytes.length ~/ 2) == utf8.decode(_!).substring(bytes.length ~/ 2)){
-        break;
-      }
-    }
-    pty.kill();
+    await SingleCommandShell.execute(command);
   }
 }
