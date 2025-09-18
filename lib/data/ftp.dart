@@ -25,7 +25,6 @@ abstract class FTP{
   }
 
   static Future<void> uploadZip(final String localFolder, final String tarName, final String remoteFolder) async {
-    print([localFolder, tarName, remoteFolder]);
     await Tar.tar(localFolder, "${FileSystem.getCurrentDirectory}Local/${FileSystem.tmpDir}$tarName");
     await upload(FileSystem.tmpDir, tarName, remoteFolder, tarName);
     FileSystem.tryDeleteFromLocalSync(FileSystem.tmpDir, tarName);
@@ -58,11 +57,12 @@ abstract class Tar{
   static String get sh => Platform.isWindows ? "cmd.exe" : Platform.isLinux ? "bash" : throw Exception();
 
   static Future<void> tar(final String from, final String to) async {
-    final String command = "tar -cf $to $from\n";
+    final String target = from.split('/').last;
+    final String at = from.substring(0, from.length - target.length);
+    final String command = "tar -cf $to -C $at $target\n";
     final Pty pty = Pty.start(sh);
     Uint8List? _;
     bool sent = false;
-    int i = 0;
     await for(final Uint8List bytes in pty.output){
       final bool wait = _ == null;
       if(_ == null && bytes.length > 10){ // TODO contains some character sequence like ": "
@@ -87,7 +87,6 @@ abstract class Tar{
     final Pty pty = Pty.start(sh);
     Uint8List? _;
     bool sent = false;
-    int i = 0;
     await for(final Uint8List bytes in pty.output){
       final bool wait = _ == null;
       if(_ == null && bytes.length > 10){ // TODO contains some character sequence like ": "
