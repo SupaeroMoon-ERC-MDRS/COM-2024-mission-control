@@ -148,6 +148,7 @@ class _MainScreenSideMenuState extends State<MainScreenSideMenu> {
                 icon: const Icon(Icons.update)
               )
               // TODO go to task screen
+              // TODO launch gs and or remote buttons
             ],
           ),
           UpdateControls(

@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter_pty/flutter_pty.dart';
 
 abstract class SingleCommandShell{
-  static String get sh => Platform.isWindows ? "cmd.exe" : Platform.isLinux ? "bash" : throw Exception();
+  static String get sh => Platform.isWindows ? "cmd.exe" : Platform.isLinux ? "bash" : throw Exception("Unsupported platform");
 
   static Future<bool> execute(final String cmd) async {
     final Pty pty = Pty.start(sh);

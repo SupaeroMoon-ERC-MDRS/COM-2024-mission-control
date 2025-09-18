@@ -53,8 +53,6 @@ abstract class FTP{
 }
 
 abstract class Tar{
-  static String get sh => Platform.isWindows ? "cmd.exe" : Platform.isLinux ? "bash" : throw Exception();
-
   static Future<void> tar(final String from, final String to) async {
     final String target = from.split('/').last;
     final String at = from.substring(0, from.length - target.length);

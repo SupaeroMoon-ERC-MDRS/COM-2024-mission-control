@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:logging_utils/logging_utils.dart';
+import 'package:supaeromoon_mission_control/data/discovery.dart';
 import 'package:supaeromoon_mission_control/data_misc/session.dart';
 import 'package:supaeromoon_mission_control/io/file_system.dart';
 import 'package:supaeromoon_mission_control/io/localization.dart';
@@ -31,6 +32,7 @@ abstract class LifeCycle{
   }
 
   static Future<void> shutdown() async {
+    Database.unlock();
     Session.save();
     await logging.stop();
     exit(0);
