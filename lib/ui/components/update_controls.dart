@@ -114,28 +114,49 @@ class UpdateControls extends StatefulWidget {
 }
 
 class _UpdateControlsState extends State<UpdateControls> {
+
+  @override
+  void initState() {
+    Database.remoteChange.addListener(_update);
+    Database.localChange.addListener(_update);
+    super.initState();
+  }
+
+  void _update() => setState(() {});
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         SizedBox(
           width: 200,
-          child: Text(widget.title, style: ThemeManager.textStyle,),
+          height: 50,
+          child: Center(child: Text(widget.title, style: ThemeManager.textStyle,)),
         ),
         Text(widget.getCurrent().toString(), style: ThemeManager.textStyle,),
         const Spacer(),
-        DropdownButton(
-          value: widget.getCurrent(),
-          items: widget.getOptions().map((e) => DropdownMenuItem(value: e, child: Text(e?.toString() ?? "Select", style: ThemeManager.textStyle,),)).toList(),
-          onChanged: (final Version? v) async {
-            if(v == null){
-              return;
+        SizedBox(
+          width: 70,
+          child: DropdownButton(
+            value: widget.getCurrent(),
+            items: widget.getOptions().map((e) => DropdownMenuItem(value: e, child: Text(e?.toString() ?? "Select", style: ThemeManager.textStyle,),)).toList(),
+            onChanged: (final Version? v) async {
+              if(v == null){
+                return;
+              }
+              await widget.onChanged(v);
+              ConfigurationManager.reconfig();
             }
-            await widget.onChanged(v);
-            ConfigurationManager.reconfig();
-          }
+          ),
         )
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    Database.remoteChange.removeListener(_update);
+    Database.localChange.removeListener(_update);
+    super.dispose();
   }
 }

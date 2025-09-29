@@ -23,7 +23,6 @@ class TerminalManager{
       username: Session.user,
       onPasswordRequest: () => Session.pwd,
     );
-    isConnected = true;
   }
 
   Future<void> initialize() async {
@@ -65,6 +64,7 @@ class TerminalManager{
       await Future.delayed(const Duration(milliseconds: 100));
       if(terminal.buffer.cursorX != 0){
         minCursorX = terminal.buffer.cursorX;
+        isConnected = true;
         return;
       }
     }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dartssh2/dartssh2.dart';
 import 'package:logging_utils/logging_utils.dart';
 import 'package:supaeromoon_mission_control/data/components.dart';
+import 'package:supaeromoon_mission_control/data_misc/notifiers.dart';
 import 'package:supaeromoon_mission_control/io/file_system.dart';
 import 'package:supaeromoon_mission_control/io/serdes.dart';
 import 'package:supaeromoon_mission_control/io/terminal.dart';
@@ -27,6 +28,9 @@ abstract class Database{
   static final List<NetCodeDescriptor> netCodeDescriptors = [];
   static final List<RemoteControlDescriptor> remoteDescriptors = [];
   static final List<GroundStationDescriptor> groundStationDescriptors = [];
+
+  static BlankNotifier remoteChange = BlankNotifier(null);
+  static BlankNotifier localChange = BlankNotifier(null);
 
   static String get remoteDbcFolder {
     final String platform = Platform.isWindows ? "win/" : Platform.isLinux ? "linux/" : throw Exception("Unsupported platform");
@@ -134,6 +138,7 @@ abstract class Database{
       netCodeVersions.addAll(netCodeDescriptors.map((e) => e.version));
       remoteVersions.addAll(remoteDescriptors.map((e) => e.version));
       groundStationVersions.addAll(groundStationDescriptors.map((e) => e.version));
+      remoteChange.update();
       return true;
     }
     catch(ex){
@@ -159,5 +164,6 @@ abstract class Database{
     
     try{ localGroundStation = GroundStationDescriptor.fromMap(localGroundStationData).version; }
     catch(_){ logging.error("No ground station installed locally"); }
+    localChange.update();
   }
 }

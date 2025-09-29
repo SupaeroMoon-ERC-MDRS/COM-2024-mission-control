@@ -57,7 +57,10 @@ class SessionFormElement extends StatelessWidget {
     return Row(
       children: [
         const Spacer(),
-        Text(name, style: ThemeManager.textStyle,),
+        Padding(
+          padding: EdgeInsets.all(ThemeManager.globalStyle.padding),
+          child: Text(name, style: ThemeManager.textStyle,),
+        ),
         SizedBox(
           width: 200,
           child: TextFormField(
