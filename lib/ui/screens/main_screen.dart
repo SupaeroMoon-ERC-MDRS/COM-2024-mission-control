@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:logging_utils/logging_utils.dart';
 import 'package:supaeromoon_mission_control/data/components.dart';
 import 'package:supaeromoon_mission_control/data/discovery.dart';
+import 'package:supaeromoon_mission_control/io/launcher.dart';
 import 'package:supaeromoon_mission_control/io/localization.dart';
 import 'package:supaeromoon_mission_control/lifecycle.dart';
 import 'package:supaeromoon_mission_control/notifications/notification_logic.dart' as noti;
@@ -145,10 +146,24 @@ class _MainScreenSideMenuState extends State<MainScreenSideMenu> {
                   noti.NotificationController.add(noti.Notification.decaying(LogEntry.info("Fetch finished"), 2000));
                   setState(() {});
                 },
-                icon: const Icon(Icons.update)
-              )
+                icon: const Icon(Icons.update),
+                splashRadius: 20,
+              ),
               // TODO go to task screen
-              // TODO launch gs and or remote buttons
+              IconButton(
+                onPressed: (){
+                  Launcher.gs();
+                },
+                icon: const Icon(Icons.settings_input_antenna), // TODO ImageIcon(AssetImage(..))
+                splashRadius: 20,
+              ),
+              IconButton(
+                onPressed: (){
+                  Launcher.remote();
+                },
+                icon: const Icon(Icons.two_wheeler), // TODO ImageIcon(AssetImage(..))
+                splashRadius: 20,
+              )
             ],
           ),
           UpdateControls(
